@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ExternalLink, LogOut, ShieldAlert, LayoutGrid } from "lucide-react";
+import { LogOut, ShieldAlert, LayoutGrid } from "lucide-react";
 import { ProjectManager } from "@/components/admin/project-manager";
 import { SkillManager } from "@/components/admin/skill-manager";
 import { ExperienceManager } from "@/components/admin/experience-manager";
-import { HeroImageManager } from "@/components/admin/hero-image-manager";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { GalleryManager } from "@/components/admin/gallery-manager";
 import { logoutAction } from "./actions";
 import { createClient } from "@/lib/supabase/server";
 import {
   getProjects,
   getSkills,
   getExperience,
-  getSettings,
+  getGallery,
 } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/env";
+import { isPortfolioAdmin } from "@/lib/admin-auth";
 
 export default async function AdminDashboard() {
   if (!isSupabaseConfigured) {
@@ -48,13 +48,13 @@ export default async function AdminDashboard() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
+  if (!isPortfolioAdmin(user)) redirect("/admin/login");
 
-  const [projects, skills, experience, settings] = await Promise.all([
+  const [projects, skills, experience, gallery] = await Promise.all([
     getProjects(),
     getSkills(),
     getExperience(),
-    getSettings(),
+    getGallery(),
   ]);
 
   return (
@@ -74,12 +74,11 @@ export default async function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <ThemeToggle compact />
             <Link
               href="/"
               className="hidden items-center gap-2 rounded-full border border-line px-4 py-2 text-sm text-fg transition-colors hover:border-accent hover:text-accent sm:inline-flex"
             >
-              <ExternalLink className="h-4 w-4" /> View site
+              View site
             </Link>
             <form action={logoutAction}>
               <button
@@ -105,7 +104,7 @@ export default async function AdminDashboard() {
         </div>
 
         <div className="flex flex-col gap-16">
-          <HeroImageManager currentUrl={settings.hero_image_url} />
+          <GalleryManager items={gallery} />
           <div className="rule" />
           <ProjectManager projects={projects} />
           <div className="rule" />

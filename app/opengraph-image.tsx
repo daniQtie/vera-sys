@@ -16,10 +16,10 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#0e0b08",
-          color: "#f4ece0",
+          background: "#f4f1e8",
+          color: "#20231f",
           padding: "72px",
-          fontFamily: "serif",
+          fontFamily: "Arial, sans-serif",
         }}
       >
         <div
@@ -27,25 +27,24 @@ export default function OpengraphImage() {
             fontSize: 30,
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            color: "#d0a94f",
+            color: "#5d715f",
           }}
         >
-          VeraSys
+          DDV / DANIEL DE VERA
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ fontSize: 76, lineHeight: 1.05, fontWeight: 600 }}>
-            If it lives in a browser,
-            <br />
-            <span style={{ fontStyle: "italic", color: "#d0a94f" }}>
+          <div style={{ display: "flex", flexDirection: "column", fontSize: 76, lineHeight: 1.05, fontWeight: 600 }}>
+            <span>If it lives in a browser,</span>
+            <span style={{ color: "#5d715f" }}>
               I can build it.
             </span>
           </div>
-          <div style={{ fontSize: 30, color: "#a99c88" }}>
-            {PROFILE.name} · {PROFILE.role}
+          <div style={{ display: "flex", fontSize: 30, color: "#5b625b" }}>
+            {`${PROFILE.name} · ${PROFILE.role}`}
           </div>
         </div>
-        <div style={{ fontSize: 24, color: "#6e6355" }}>
-          E-commerce · Booking systems · Full-stack platforms
+        <div style={{ fontSize: 24, color: "#5b625b" }}>
+          SaaS · Web applications · Digital products
         </div>
       </div>
     ),

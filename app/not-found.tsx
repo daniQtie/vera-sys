@@ -13,7 +13,7 @@ export default function NotFound() {
           <span className="italic text-accent">wrong turn.</span>
         </h1>
         <p className="mx-auto mt-4 max-w-md text-muted">
-          The page you're looking for doesn't exist or has moved.
+          The page you&apos;re looking for doesn&apos;t exist or has moved.
         </p>
         <Link
           href="/"

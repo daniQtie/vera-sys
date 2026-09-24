@@ -1,114 +1,36 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowUpRight, Download } from "lucide-react";
+import type { GalleryItem } from "@/lib/types";
+import { ProofGallery } from "./proof-gallery";
 import { PROFILE } from "@/lib/seed-data";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-
-export function Hero({ imageUrl }: { imageUrl?: string | null }) {
+export function Hero({ gallery }: { gallery: GalleryItem[] }) {
   const reduce = useReducedMotion();
-  const photo = imageUrl || PROFILE.photo;
-  const rise = (delay: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.8, delay, ease: EASE },
-  });
 
   return (
-    <section
-      id="top"
-      className="relative mx-auto grid min-h-[100dvh] max-w-[1240px] grid-cols-1 items-center gap-10 px-5 pb-16 pt-28 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:pt-24"
-    >
-      {/* soft ambient glow for depth (theme-aware, very subtle) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 right-0 -z-10 h-[560px] w-[560px] rounded-full opacity-[0.14] blur-[110px]"
-        style={{
-          background:
-            "radial-gradient(circle, var(--accent), transparent 68%)",
-        }}
-      />
-      {/* Left — copy */}
-      <div className="order-2 lg:order-1">
-        <motion.span
-          {...rise(0.1)}
-          className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/60 px-3.5 py-1.5 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-muted"
-        >
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-75" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-secondary" />
-          </span>
-          {PROFILE.availability}
-        </motion.span>
-
-        <motion.h1
-          {...rise(0.2)}
-          className="mt-6 font-display text-[2.7rem] font-semibold leading-[1.04] tracking-tight text-fg xs:text-5xl sm:text-6xl lg:text-[4.4rem]"
-        >
-          If it lives in a browser,{" "}
-          <span className="italic text-accent">I can build it.</span>
-        </motion.h1>
-
-        <motion.p
-          {...rise(0.32)}
-          className="mt-6 max-w-[30rem] text-base leading-relaxed text-muted sm:text-lg"
-        >
-          {PROFILE.heroSub}
-        </motion.p>
-
-        <motion.div
-          {...rise(0.44)}
-          className="mt-9 flex flex-wrap items-center gap-3"
-        >
-          <a
-            href="#work"
-            className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-fg transition-transform hover:-translate-y-0.5 active:translate-y-0"
-          >
-            View selected work
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
-          <a
-            href={PROFILE.cvPath}
-            download
-            className="inline-flex items-center gap-2 rounded-full border border-line-strong px-6 py-3 text-sm font-medium text-fg transition-colors hover:border-accent hover:text-accent"
-          >
-            <Download className="h-4 w-4" />
-            Download CV
-          </a>
+    <section id="top" className="relative mx-auto flex min-h-[100dvh] max-w-[1600px] flex-col justify-between overflow-hidden px-5 pb-7 pt-28 sm:px-8 lg:px-12">
+      <div className="grid flex-1 grid-cols-1 items-center gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16">
+        <div className="relative z-10">
+          <motion.p initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.15 }} className="field-label">Full-stack developer · Pangasinan, Philippines</motion.p>
+          <motion.h1 className="mt-6 max-w-[11ch] text-[clamp(3.25rem,5.7vw,6.8rem)] font-semibold leading-[0.88] tracking-[-0.07em] text-balance">
+            I build software for <span className="text-vermillion">real work.</span>
+          </motion.h1>
+          <motion.div initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.35 }} className="mt-8">
+            <p className="max-w-[43ch] text-base leading-relaxed text-ink/65 sm:text-lg">Booking platforms, management systems, and focused business websites—from database to interface.</p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a href={PROFILE.cvPath} download className="hero-action"><span>Download CV</span></a>
+              <a href="https://github.com/daniQtie" target="_blank" rel="noopener noreferrer" className="hero-action hero-action-filled"><span>GitHub</span></a>
+            </div>
+          </motion.div>
+        </div>
+        <motion.div initial={reduce ? false : { opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1, delay: 0.2, ease: [0.76, 0, 0.24, 1] }}>
+          <ProofGallery items={gallery} />
         </motion.div>
       </div>
-
-      {/* Right — portrait */}
-      <motion.div
-        initial={reduce ? false : { opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 0.25, ease: EASE }}
-        className="order-1 lg:order-2"
-      >
-        <div className="relative mx-auto w-full max-w-[22rem] lg:max-w-none">
-          <div className="pointer-events-none absolute -inset-3 rounded-[2rem] border border-line" />
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[1.6rem] border border-line-strong bg-surface">
-            <Image
-              src={photo}
-              alt={`${PROFILE.name}, ${PROFILE.role} based in ${PROFILE.location}`}
-              fill
-              priority
-              sizes="(max-width: 1024px) 88vw, 40vw"
-              className="object-cover object-center"
-            />
-            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/55 to-transparent p-4">
-              <span className="font-display text-lg text-white">
-                {PROFILE.name}
-              </span>
-              <span className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-white/80">
-                {PROFILE.location}
-              </span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      <div className="mt-10 flex items-center justify-between border-t border-ink/20 pt-4">
+        <span className="field-label">Build · solve · improve</span><span className="field-label">Scroll / 01</span>
+      </div>
     </section>
   );
 }

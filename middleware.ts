@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { isPortfolioAdmin } from "@/lib/admin-auth";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -18,7 +19,7 @@ export async function middleware(request: NextRequest) {
   // "setup required" notice instead of redirect-looping.
   if (!configured) return NextResponse.next();
 
-  let response = NextResponse.next({ request });
+  const response = NextResponse.next({ request });
 
   const supabase = createServerClient(URL!, KEY!, {
     cookies: {
@@ -39,14 +40,16 @@ export async function middleware(request: NextRequest) {
 
   const isLogin = pathname === "/admin/login";
 
-  if (!user && !isLogin) {
+  const isAdmin = isPortfolioAdmin(user);
+
+  if (!isAdmin && !isLogin) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/admin/login";
     redirectUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isLogin) {
+  if (isAdmin && isLogin) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/admin";
     redirectUrl.search = "";

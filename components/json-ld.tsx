@@ -1,6 +1,7 @@
 import { PROFILE } from "@/lib/seed-data";
 import { SITE_URL } from "@/lib/env";
 import type { Project } from "@/lib/types";
+import { serializeJsonLd } from "@/lib/json-ld";
 
 /**
  * Structured data (JSON-LD). Rebuilt from the same data source the page
@@ -53,11 +54,11 @@ export function JsonLd({ projects }: { projects: Project[] }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(person) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(person) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(portfolio) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(portfolio) }}
       />
     </>
   );

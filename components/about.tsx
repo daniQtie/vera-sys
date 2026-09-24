@@ -1,44 +1,39 @@
-import { Reveal } from "./reveal";
+import Image from "next/image";
 import { PROFILE } from "@/lib/seed-data";
+import { Reveal } from "./reveal";
 
 export function About() {
   return (
-    <section
-      id="about"
-      className="mx-auto max-w-[1240px] scroll-mt-24 px-5 py-24 sm:px-8 sm:py-32"
-    >
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+    <section id="about" className="border-t border-ink/15">
+      <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-12 px-5 py-24 sm:px-8 lg:grid-cols-[0.34fr_0.66fr] lg:px-12 lg:py-36">
+        <div>
+          <p className="field-label">About / 02</p>
+          <Reveal className="mt-8">
+            <div className="relative aspect-[4/5] max-w-[360px] overflow-hidden bg-ink/5">
+              <Image src="/daniel-about.png" alt={PROFILE.name + " in formal attire"} fill sizes="(max-width: 1024px) 80vw, 28vw" className="object-cover object-center" />
+            </div>
+          </Reveal>
+        </div>
         <div>
           <Reveal>
-            <h2 className="max-w-[16ch] font-display text-4xl font-medium leading-[1.08] tracking-tight text-fg sm:text-5xl">
-              I treat every build like a{" "}
-              <span className="italic text-accent">product</span>, not a page.
+            <h2 className="max-w-[15ch] text-[clamp(2.8rem,6vw,7rem)] font-semibold leading-[0.92] tracking-[-0.065em] text-balance">
+              I care about the work behind the <span className="text-vermillion">interface.</span>
             </h2>
           </Reveal>
-          <div className="mt-8 space-y-5">
-            {PROFILE.aboutParagraphs.map((p, i) => (
-              <Reveal key={i} delay={0.05 * i}>
-                <p className="max-w-[52ch] text-base leading-relaxed text-muted">
-                  {p}
-                </p>
-              </Reveal>
-            ))}
+          <div className="mt-12 grid grid-cols-1 gap-10 border-t border-ink/20 pt-7 md:grid-cols-2">
+            <Reveal>
+              <p className="text-lg leading-relaxed">
+                I’m Daniel, a full-stack developer from Pangasinan. I turn manual workflows into focused software—especially booking, operations, and business-management tools.
+              </p>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <div className="space-y-5 text-base leading-relaxed text-ink/62">
+                {PROFILE.aboutParagraphs.slice(0, 2).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+                <a href={PROFILE.cvPath} download className="editorial-link text-ink">Download résumé</a>
+              </div>
+            </Reveal>
           </div>
         </div>
-
-        {/* Stats — hairline grid, no card boxes */}
-        <Reveal delay={0.1} className="self-start">
-          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line">
-            {PROFILE.stats.map((s) => (
-              <div key={s.label} className="bg-bg p-6 sm:p-8">
-                <dt className="font-display text-4xl font-semibold text-accent sm:text-5xl">
-                  {s.num}
-                </dt>
-                <dd className="mt-2 text-sm text-muted">{s.label}</dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
       </div>
     </section>
   );

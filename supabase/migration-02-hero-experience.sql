@@ -24,7 +24,8 @@ create policy "public read settings"
 drop policy if exists "auth write settings" on public.site_settings;
 create policy "auth write settings"
   on public.site_settings for all
-  to authenticated using (true) with check (true);
+  to authenticated using (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
 
 -- ── EXPERIENCE ("The road so far") ────────────────────────────
 create table if not exists public.experience (
@@ -53,7 +54,8 @@ create policy "public read experience"
 drop policy if exists "auth write experience" on public.experience;
 create policy "auth write experience"
   on public.experience for all
-  to authenticated using (true) with check (true);
+  to authenticated using (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
 
 -- Seed the existing timeline, only if the table is empty.
 insert into public.experience (date, role, company, points, sort_order)

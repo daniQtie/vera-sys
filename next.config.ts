@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Allows an isolated verification build while a local dev server uses .next.
+  distDir: process.env.PORTFOLIO_BUILD_DIST_DIR || ".next",
+  outputFileTracingRoot: process.cwd(),
   images: {
     // Allow Supabase Storage public URLs to be optimized by next/image.
     remotePatterns: [
@@ -26,7 +29,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  eslint: { ignoreDuringBuilds: true },
 };
 
 export default nextConfig;

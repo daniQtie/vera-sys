@@ -1,31 +1,40 @@
 "use client";
 
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 
-/**
- * First-paint loader: an animated "DV" monogram + progress hairline.
- * Dismisses on window load (or a short fallback), then never shows again
- * for the session so client navigations feel instant.
- */
+const EASE = [0.76, 0, 0.24, 1] as const;
+
 export function PageLoader() {
   const [done, setDone] = useState(false);
+  const [progress, setProgress] = useState(0);
   const reduce = useReducedMotion();
 
   useEffect(() => {
-    if (sessionStorage.getItem("verasys-loaded")) {
+    if (sessionStorage.getItem("ddv-loader-v2-seen")) {
       setDone(true);
       return;
     }
-    const finish = () => {
-      sessionStorage.setItem("verasys-loaded", "1");
-      setDone(true);
+    if (reduce) {
+      const short = window.setTimeout(() => setDone(true), 180);
+      return () => window.clearTimeout(short);
+    }
+    const started = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const elapsed = now - started;
+      const value = Math.min(100, Math.round((elapsed / 1250) * 100));
+      setProgress(value);
+      if (value < 100) frame = requestAnimationFrame(tick);
     };
-    const t = setTimeout(finish, reduce ? 200 : 1400);
-    window.addEventListener("load", finish, { once: true });
+    frame = requestAnimationFrame(tick);
+    const finish = window.setTimeout(() => {
+      sessionStorage.setItem("ddv-loader-v2-seen", "1");
+      setDone(true);
+    }, 1450);
     return () => {
-      clearTimeout(t);
-      window.removeEventListener("load", finish);
+      cancelAnimationFrame(frame);
+      window.clearTimeout(finish);
     };
   }, [reduce]);
 
@@ -33,39 +42,29 @@ export function PageLoader() {
     <AnimatePresence>
       {!done && (
         <motion.div
-          className="loader-failsafe fixed inset-0 z-[200] grid place-items-center bg-bg"
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="loader-failsafe fixed inset-0 z-[200] flex items-center justify-center bg-paper px-5 text-ink"
+          exit={{ clipPath: "inset(0 0 100% 0)" }}
+          transition={{ duration: 0.72, ease: EASE }}
+          aria-label="Loading portfolio"
+          role="status"
         >
-          <div className="flex flex-col items-center gap-6">
-            <div className="font-display text-5xl tracking-tight text-fg">
+          <div className="w-full max-w-[680px]">
+            <div className="mb-4 flex items-end justify-between border-b border-ink/15 pb-4 font-mono uppercase">
+              <span className="text-[10px] tracking-[0.16em] text-ink/50">Daniel De Vera / Portfolio</span>
               <motion.span
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                className="text-[clamp(3.5rem,12vw,8rem)] leading-[0.75] tracking-[-0.08em] tabular-nums"
               >
-                D
-              </motion.span>
-              <motion.span
-                className="italic text-accent"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.12 }}
-              >
-                V
+                {String(progress).padStart(3, "0")}
               </motion.span>
             </div>
-            <div className="h-px w-40 overflow-hidden bg-line">
-              <motion.div
-                className="h-full bg-accent"
-                initial={{ x: "-100%" }}
-                animate={{ x: "0%" }}
-                transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-              />
+            <div className="h-[3px] overflow-hidden bg-ink/12">
+              <motion.div className="h-full bg-vermillion" animate={{ width: progress + "%" }} transition={{ duration: 0.08, ease: "linear" }} />
             </div>
-            <span className="font-mono text-[0.6rem] uppercase tracking-[0.3em] text-faint">
-              VeraSys
-            </span>
+            <div className="mt-3 flex justify-between font-mono text-[9px] uppercase tracking-[0.16em] text-ink/45">
+              <span>Loading selected work</span><span>{String(progress).padStart(3, "0")}%</span>
+            </div>
           </div>
         </motion.div>
       )}

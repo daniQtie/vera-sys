@@ -11,6 +11,11 @@ export const isSupabaseConfigured = Boolean(
     !SUPABASE_URL.includes("YOUR-PROJECT"),
 );
 
+const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+  (process.env.NODE_ENV === "production" && configuredSiteUrl?.includes("localhost")
+    ? undefined
+    : configuredSiteUrl) ||
+  (vercelHost ? `https://${vercelHost}` : "http://localhost:3000");

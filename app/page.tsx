@@ -9,28 +9,29 @@ import { Experience } from "@/components/experience";
 import { Contact } from "@/components/contact";
 import { Footer } from "@/components/footer";
 import { JsonLd } from "@/components/json-ld";
-import { getProjects, getSkills, getExperience, getSettings } from "@/lib/data";
+import { getProjects, getSkills, getExperience, getGallery } from "@/lib/data";
+import { FEATURED_PROJECTS, hasFeaturedProjectFields, projectUrlKey } from "@/lib/featured-projects";
 
 export default async function HomePage() {
-  const [projects, skills, experience, settings] = await Promise.all([
+  const [projects, skills, experience, gallery] = await Promise.all([
     getProjects(),
     getSkills(),
     getExperience(),
-    getSettings(),
+    getGallery(),
   ]);
 
   return (
     <>
-      <JsonLd projects={projects} />
+      <JsonLd projects={[...projects, ...(hasFeaturedProjectFields(projects) ? [] : FEATURED_PROJECTS.filter((featured) => !projects.some((project) => projectUrlKey(project.live_url) === projectUrlKey(featured.live_url))))]} />
       <Nav />
       <main>
-        <Hero imageUrl={settings.hero_image_url} />
-        <About />
-        <Skills skills={skills} />
+        <Hero gallery={gallery} />
         <Suspense fallback={<ProjectsSkeleton />}>
           <Projects projects={projects} />
         </Suspense>
+        <About />
         <Experience items={experience} />
+        <Skills skills={skills} />
         <Contact />
       </main>
       <Footer />

@@ -84,7 +84,9 @@ insert into public.skills (name, category, sort_order) values
   ('VS Code','tools',2),
   ('XAMPP','tools',3),
   ('Figma','tools',4),
-  ('Vercel','tools',5)
+  ('Vercel','tools',5),
+  ('Codex','tools',6),
+  ('Make.com','tools',7)
 on conflict (name) do update set
   category = excluded.category,
   sort_order = excluded.sort_order;

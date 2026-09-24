@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ShieldCheck } from "lucide-react";
+import { notFound, permanentRedirect } from "next/navigation";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { LivePreview } from "@/components/live-preview";
@@ -9,6 +9,7 @@ import { getProjectBySlug, getProjects } from "@/lib/data";
 import { canEmbed } from "@/lib/embeddable";
 import { SITE_URL } from "@/lib/env";
 import { PROFILE } from "@/lib/seed-data";
+import { serializeJsonLd } from "@/lib/json-ld";
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -50,6 +51,7 @@ export default async function ProjectPage({
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
+  if (project.slug !== slug) permanentRedirect(`/projects/${project.slug}`);
 
   const embeddable = await canEmbed(project.preview_url);
 
@@ -67,7 +69,7 @@ export default async function ProjectPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <Nav />
       <main className="mx-auto max-w-[1000px] px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
@@ -111,7 +113,6 @@ export default async function ProjectPage({
               className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-fg transition-transform hover:-translate-y-0.5"
             >
               Open live site
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           )}
           {project.admin_url && (

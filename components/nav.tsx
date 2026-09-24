@@ -1,115 +1,57 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
+import { usePathname } from "next/navigation";
 import { PROFILE } from "@/lib/seed-data";
 
-const LINKS = [
-  { href: "#about", label: "About" },
-  { href: "#skills", label: "Skills" },
+const links = [
   { href: "#work", label: "Work" },
+  { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
+  { href: "#contact", label: "Contact" },
 ];
 
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const anchor = (href: string) => pathname === "/" ? href : `/${href}`;
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const update = () => setScrolled(window.scrollY > 20);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-[120] transition-colors duration-300 ${
-        scrolled
-          ? "border-b border-line bg-bg/80 backdrop-blur-xl"
-          : "border-b border-transparent"
-      }`}
-    >
-      <nav className="mx-auto flex h-[68px] max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8">
-        <a
-          href="#top"
-          className="font-display text-xl font-semibold tracking-tight text-fg"
-        >
-          Vera<span className="italic text-accent">Sys</span>
+    <header className={"fixed inset-x-0 top-0 z-[120] transition-colors duration-300 " + (scrolled ? "border-b border-ink/15 bg-paper/92 backdrop-blur-md" : "")}>
+      <nav className="mx-auto flex h-[68px] max-w-[1600px] items-center justify-between px-5 sm:px-8 lg:px-12">
+        <a href={anchor("#top")} className="text-sm font-semibold tracking-[-0.025em]">
+          DDV <span className="ml-2 font-mono text-[10px] font-normal tracking-[0.12em] text-ink/45">DANIEL DE VERA</span>
         </a>
-
-        {/* Desktop links */}
-        <div className="hidden items-center gap-1 lg:flex">
-          {LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="rounded-full px-4 py-2 font-mono text-[0.7rem] uppercase tracking-[0.1em] text-muted transition-colors hover:text-fg"
-            >
-              {l.label}
-            </a>
-          ))}
+        <div className="hidden items-center gap-7 md:flex">
+          {links.map((link) => <a key={link.href} href={anchor(link.href)} className="nav-link">{link.label}</a>)}
         </div>
-
-        <div className="flex items-center gap-2.5">
-          <ThemeToggle />
-          <a
-            href="#contact"
-            className="hidden rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-fg transition-transform hover:-translate-y-0.5 active:translate-y-0 sm:inline-block"
-          >
-            Get in touch
+        <div className="flex items-center gap-4">
+          <a href={"mailto:" + PROFILE.email} className="available-link hidden items-center gap-2 text-xs font-medium sm:flex">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#268455]" />Available for work
           </a>
-          <button
-            className="grid h-9 w-9 place-items-center rounded-full border border-line text-fg lg:hidden"
-            aria-label="Open menu"
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <button type="button" onClick={() => setOpen((value) => !value)} className="menu-toggle md:hidden" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open}>
+            {open ? "Close" : "Menu"}
           </button>
         </div>
       </nav>
-
-      {/* Mobile drawer */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden border-t border-line bg-bg/95 backdrop-blur-xl lg:hidden"
-          >
-            <div className="flex flex-col gap-1 px-5 py-5">
-              {LINKS.map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-muted transition-colors hover:bg-surface hover:text-fg"
-                >
-                  {l.label}
+          <motion.div initial={{ clipPath: "inset(0 0 100% 0)" }} animate={{ clipPath: "inset(0 0 0 0)" }} exit={{ clipPath: "inset(0 0 100% 0)" }} transition={{ duration: 0.45, ease: [0.76, 0, 0.24, 1] }} className="absolute inset-x-0 top-[68px] min-h-[calc(100dvh-68px)] border-t border-ink/15 bg-paper px-5 py-10 md:hidden">
+            <div className="flex flex-col">
+              {links.map((link, index) => (
+                <a key={link.href} href={anchor(link.href)} onClick={() => setOpen(false)} className="flex items-baseline gap-4 border-b border-ink/15 py-5 text-4xl font-semibold tracking-[-0.05em]">
+                  <span className="font-mono text-xs font-normal text-ink/40">0{index + 1}</span>{link.label}
                 </a>
               ))}
-              <a
-                href="#contact"
-                onClick={() => setOpen(false)}
-                className="mt-2 rounded-lg bg-accent px-3 py-3 text-center text-sm font-medium text-accent-fg"
-              >
-                Get in touch
-              </a>
-              <span className="mt-3 px-3 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-faint">
-                {PROFILE.location}
-              </span>
             </div>
           </motion.div>
         )}

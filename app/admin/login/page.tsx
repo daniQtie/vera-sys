@@ -42,7 +42,7 @@ export default async function LoginPage({
               <div className="flex items-start gap-3 rounded-lg border border-line bg-bg2/50 p-4 text-sm text-muted">
                 <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                 <span>
-                  Supabase isn't configured yet. Add your keys to{" "}
+                  Supabase isn&apos;t configured yet. Add your keys to{" "}
                   <code className="font-mono text-fg">.env.local</code> and
                   create an admin user to enable sign in.
                 </span>

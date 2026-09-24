@@ -114,3 +114,9 @@ export const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email").max(200),
   password: z.string().min(6, "Password is too short").max(200),
 });
+
+export const gallerySchema = z.object({
+  title: z.string().trim().min(2, "Title is required").max(100),
+  alt_text: z.string().trim().min(4, "Describe the image").max(180),
+  sort_order: z.coerce.number().int().min(0).max(9999).default(0),
+});

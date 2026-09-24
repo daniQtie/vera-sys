@@ -121,6 +121,8 @@ export const SEED_SKILLS: Skill[] = [
   { id: "sk-20", name: "XAMPP", category: "tools", sort_order: 3 },
   { id: "sk-21", name: "Figma", category: "tools", sort_order: 4 },
   { id: "sk-22", name: "Vercel", category: "tools", sort_order: 5 },
+  { id: "sk-23", name: "Codex", category: "tools", sort_order: 6 },
+  { id: "sk-24", name: "Make.com", category: "tools", sort_order: 7 },
 ];
 
 /** Static profile / identity content (not stored in DB). */

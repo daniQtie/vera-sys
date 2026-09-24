@@ -1,18 +1,9 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider, themeInitScript } from "@/components/theme-provider";
 import { PageLoader } from "@/components/page-loader";
 import { SITE_URL } from "@/lib/env";
 import { PROFILE } from "@/lib/seed-data";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
-});
 
 const geist = Geist({
   subsets: ["latin"],
@@ -87,17 +78,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
+    <html lang="en">
       <body
-        className={`${geist.variable} ${playfair.variable} ${geistMono.variable} grain antialiased`}
+        className={`${geist.variable} ${geistMono.variable} grain antialiased`}
       >
-        <ThemeProvider>
-          <PageLoader />
-          {children}
-        </ThemeProvider>
+        <PageLoader />
+        {children}
       </body>
     </html>
   );

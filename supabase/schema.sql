@@ -45,7 +45,7 @@ create trigger trg_projects_updated
 
 -- ══════════════════════════════════════════════════════════════
 --  ROW LEVEL SECURITY
---  Public: SELECT only.  Authenticated: full write.
+--  Public: SELECT only. Admin role in app_metadata: write.
 -- ══════════════════════════════════════════════════════════════
 alter table public.projects enable row level security;
 alter table public.skills   enable row level security;
@@ -68,13 +68,15 @@ drop policy if exists "auth write projects" on public.projects;
 create policy "auth write projects"
   on public.projects for all
   to authenticated
-  using (true) with check (true);
+  using (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
 
 drop policy if exists "auth write skills" on public.skills;
 create policy "auth write skills"
   on public.skills for all
   to authenticated
-  using (true) with check (true);
+  using (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
 
 -- ══════════════════════════════════════════════════════════════
 --  STORAGE — bucket for project images
@@ -97,8 +99,8 @@ drop policy if exists "auth manage project images" on storage.objects;
 create policy "auth manage project images"
   on storage.objects for all
   to authenticated
-  using (bucket_id = 'project-images')
-  with check (bucket_id = 'project-images');
+  using (bucket_id = 'project-images' and ((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (bucket_id = 'project-images' and ((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
 
 -- ══════════════════════════════════════════════════════════════
 --  SITE SETTINGS (editable hero image, etc.) + EXPERIENCE
@@ -118,7 +120,8 @@ create policy "public read settings" on public.site_settings for select
   to anon, authenticated using (true);
 drop policy if exists "auth write settings" on public.site_settings;
 create policy "auth write settings" on public.site_settings for all
-  to authenticated using (true) with check (true);
+  to authenticated using (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
 
 create table if not exists public.experience (
   id         uuid primary key default gen_random_uuid(),
@@ -141,4 +144,32 @@ create policy "public read experience" on public.experience for select
   to anon, authenticated using (true);
 drop policy if exists "auth write experience" on public.experience;
 create policy "auth write experience" on public.experience for all
-  to authenticated using (true) with check (true);
+  to authenticated using (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
+
+-- ── PROOF-OF-WORK GALLERY ────────────────────────────────────
+create table if not exists public.gallery_items (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  alt_text text not null,
+  image_url text not null,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+drop trigger if exists trg_gallery_items_updated on public.gallery_items;
+create trigger trg_gallery_items_updated
+  before update on public.gallery_items
+  for each row execute function public.set_updated_at();
+
+alter table public.gallery_items enable row level security;
+drop policy if exists "public read gallery" on public.gallery_items;
+create policy "public read gallery" on public.gallery_items for select
+  to anon, authenticated using (true);
+drop policy if exists "auth write gallery" on public.gallery_items;
+create policy "auth write gallery" on public.gallery_items for all
+  to authenticated using (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin')
+  with check (((select auth.jwt()) -> 'app_metadata' ->> 'portfolio_role') = 'admin');
+
+grant select on table public.gallery_items to anon, authenticated;
+grant insert, update, delete on table public.gallery_items to authenticated;

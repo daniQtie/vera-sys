@@ -12,6 +12,8 @@ export interface Project {
   admin_url: string | null;
   preview_url: string | null;
   sort_order: number;
+  is_featured?: boolean;
+  featured_order?: number | null;
 }
 
 export interface Skill {
@@ -32,6 +34,14 @@ export interface Experience {
 
 export interface SiteSettings {
   hero_image_url: string | null;
+}
+
+export interface GalleryItem {
+  id: string;
+  title: string;
+  alt_text: string;
+  image_url: string;
+  sort_order: number;
 }
 
 export const SKILL_CATEGORIES: { key: SkillCategory; label: string }[] = [
